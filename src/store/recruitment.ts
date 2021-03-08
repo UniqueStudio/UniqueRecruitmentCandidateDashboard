@@ -19,7 +19,7 @@ const recruitmentSlice = createSlice({
   initialState,
   reducers: {
     setRecruitmentState: (state, action: PayloadAction<RecruitmentState>) => {
-      state = { ...action.payload };
+      return { ...action.payload };
     },
   },
 });
