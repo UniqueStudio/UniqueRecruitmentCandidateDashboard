@@ -1,42 +1,89 @@
-import styles from '../styles/Home.module.css';
+import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Edit as EditIcon } from '@material-ui/icons';
+import { NextPage } from 'next';
+import { useEffect } from 'react';
 
-export default function Home() {
+import { useAppDispatch, useAppSelector } from 'store';
+import { setLayoutTitle } from 'store/component';
+import RecruitmentInfo from 'components/RecruitmentInfo';
+import Entry from 'components/Entry';
+import type { EntryCardProps } from 'components/Entry/EntryCard';
+
+const useStyles = makeStyles((theme) => ({
+  container: {
+    padding: theme.spacing(6, 10),
+    [theme.breakpoints.down('md')]: {
+      padding: theme.spacing(6, 6),
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(6, 4),
+    },
+    [theme.breakpoints.down('xs')]: {
+      padding: theme.spacing(4, 4),
+    },
+  },
+  info: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  infoBar: {
+    marginBottom: theme.spacing(6),
+    [theme.breakpoints.down('sm')]: {
+      marginBottom: theme.spacing(2),
+    },
+  },
+  title: {
+    padding: theme.spacing(1, 2),
+  },
+}));
+
+const entries: EntryCardProps[] = [
+  {
+    href: '/edit',
+    icon: <EditIcon fontSize='large' color='action' />,
+    describe: '修改信息',
+  },
+];
+
+const Index: NextPage = () => {
+  const classes = useStyles();
+  const dispatch = useAppDispatch();
+  const recruitmentInfo = useAppSelector((state) => state.recruitment);
+
+  useEffect(() => {
+    dispatch(setLayoutTitle('首页'));
+  }, [dispatch]);
+
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href='https://nextjs.org'>Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href='https://nextjs.org/docs' className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href='https://nextjs.org/learn' className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a href='https://github.com/vercel/next.js/tree/master/examples' className={styles.card}>
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href='https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app'
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>Instantly deploy your Next.js site to a public URL with Vercel.</p>
-          </a>
-        </div>
-      </main>
-    </div>
+    <Container maxWidth={false} className={classes.container}>
+      <Grid container spacing={3} className={classes.infoBar}>
+        <Grid item xs={12} md={8} className={classes.info}>
+          <div className={classes.title}>
+            <Typography variant='h5' component='h1' paragraph>
+              欢迎使用联创招新选手Dashboard
+            </Typography>
+            <Typography variant='subtitle1' paragraph>
+              联创招新选手Dashboard是联创招新系统的补充部分，旨在为选手提供良好的招新状态信息获取平台。
+              <br />
+              目前大部分功能处于开发状态，如果在使用过程中有任何疑问，请通过招新FAQ群联系Web组负责人。
+            </Typography>
+          </div>
+        </Grid>
+        <Grid item xs={12} md={4} className={classes.info}>
+          <RecruitmentInfo {...recruitmentInfo} />
+        </Grid>
+      </Grid>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={8}>
+          <Entry entries={entries} />
+        </Grid>
+        <Grid item xs={12} md={8}>
+          {/* 当前进度 */}
+        </Grid>
+      </Grid>
+    </Container>
   );
-}
+};
+
+export default Index;

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core';
 import { Provider } from 'react-redux';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import Snackbar from 'components/Snackbar';
 import theme from 'styles/theme';
@@ -14,6 +14,7 @@ import store, { useAppDispatch, useAppSelector } from 'store';
 import { resetSnackbar } from 'store/component';
 
 import '../styles/globals.css';
+import { checkToken, setToken } from 'utils/token';
 
 // Todo: make without layout filter implementation more Elegant.
 const withoutLayout: Set<string> = new Set(['/login', '/_error']);
@@ -26,6 +27,21 @@ const SnackbarWapper: FC = () => {
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
+  const [logined, setLogined] = useState(false);
+
+  useEffect(() => {
+    if (router.pathname === '/' && router.query?.token) {
+      setToken(router.query?.token as string);
+    }
+    if (!checkToken()) {
+      setLogined(false);
+      if (router.pathname !== '/login' && router.pathname !== '/_error') {
+        router.push('/login');
+      }
+    } else {
+      setLogined(true);
+    }
+  }, [router]);
 
   return (
     <>
@@ -38,10 +54,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         <ThemeProvider theme={theme}>
           {withoutLayout.has(router.pathname) ? (
             <Component {...pageProps} />
-          ) : (
+          ) : logined ? (
             <Layout>
               <Component {...pageProps} />
             </Layout>
+          ) : (
+            <></>
           )}
           <SnackbarWapper />
         </ThemeProvider>
